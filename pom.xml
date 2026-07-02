@@ -75,6 +75,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <tajo.root>${basedir}</tajo.root>
+    <properties>
+      <sonar.organization>gianluca</sonar.organization>
+    </properties>
   </properties>
 
   <modules>
