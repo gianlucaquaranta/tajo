@@ -33,4 +33,4 @@ jobs:
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -DskipTests verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gianlucaquaranta_tajo
+        run: mvn -B -U -Dmaven.test.skip=true -Dmaven.javadoc.skip=true -Dgpg.skip=true -Drat.skip=true verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gianlucaquaranta_tajo
