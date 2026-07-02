@@ -13,23 +13,27 @@ jobs:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-      - name: Set up JDK 11
+
+      - name: Set up JDK 8 (per compilare il vecchio codice TAJO)
         uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
         with:
-          java-version: 11
-          distribution: 'zulu' # Alternative distribution options are available.
+          java-version: 8
+          distribution: 'zulu'
+
       - name: Cache SonarQube packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
+
       - name: Cache Maven packages
         uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+
       - name: Configure Maven (unblock HTTP + add mirror for dead conjars.org)
         run: |
           mkdir -p ~/.m2
@@ -61,7 +65,16 @@ jobs:
           </settings>
           EOF
 
-      - name: Build and analyze
+      - name: Build con JDK 8
+        run: mvn -B -fae package -DskipTests
+
+      - name: Set up JDK 21 (richiesta dallo scanner SonarCloud)
+        uses: actions/setup-java@c1e323688fd81a25caa38c78aa6df2d33d3e20d9 # v4.8.0
+        with:
+          java-version: 21
+          distribution: 'zulu'
+
+      - name: Analyze con SonarCloud
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-        run: mvn -B -fae package -DskipTests org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gianlucaquaranta_tajo
+        run: mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar -Dsonar.projectKey=gianlucaquaranta_tajo
