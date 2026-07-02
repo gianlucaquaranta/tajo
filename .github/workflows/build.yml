@@ -30,7 +30,7 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - name: Allow HTTP repositories (TAJO uses old conjars.org repo)
+      - name: Configure Maven (unblock HTTP + add mirror for dead conjars.org)
         run: |
           mkdir -p ~/.m2
           cat > ~/.m2/settings.xml <<'EOF'
@@ -42,6 +42,22 @@ jobs:
                 <url>http://0.0.0.0/</url>
               </mirror>
             </mirrors>
+            <profiles>
+              <profile>
+                <id>extra-repos</id>
+                <repositories>
+                  <repository>
+                    <id>huaweicloud-mirror</id>
+                    <url>https://repo.huaweicloud.com/artifactory/sdk_public/</url>
+                    <releases><enabled>true</enabled></releases>
+                    <snapshots><enabled>false</enabled></snapshots>
+                  </repository>
+                </repositories>
+              </profile>
+            </profiles>
+            <activeProfiles>
+              <activeProfile>extra-repos</activeProfile>
+            </activeProfiles>
           </settings>
           EOF
 
