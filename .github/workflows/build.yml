@@ -30,6 +30,21 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Allow HTTP repositories (TAJO uses old conjars.org repo)
+        run: |
+          mkdir -p ~/.m2
+          cat > ~/.m2/settings.xml <<'EOF'
+          <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+            <mirrors>
+              <mirror>
+                <id>maven-default-http-blocker</id>
+                <mirrorOf>dummy-do-not-block</mirrorOf>
+                <url>http://0.0.0.0/</url>
+              </mirror>
+            </mirrors>
+          </settings>
+          EOF
+
       - name: Build and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
