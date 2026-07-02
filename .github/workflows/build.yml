@@ -34,6 +34,9 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Pulisci cache Maven locale (evita risoluzioni fallite cachate)
+        run: rm -rf ~/.m2/repository
+
       - name: Configure Maven (unblock HTTP + add mirror for dead conjars.org)
         run: |
           mkdir -p ~/.m2
